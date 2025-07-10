@@ -1,81 +1,70 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TidyTasks</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TidyTasks - Organizador de Tareas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
+      background: #f2f4f8;
       padding: 20px;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
     h1 {
       text-align: center;
-      color: #333;
+      color: #2c3e50;
     }
     .input-group {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
-    input[type="text"] {
+    input[type="text"], input[type="date"] {
       flex: 1;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
     }
     button {
       padding: 10px 15px;
-      background-color: #2ecc71;
+      background: #3498db;
       color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #27ae60;
+      background: #2980b9;
     }
     ul {
       list-style: none;
       padding: 0;
     }
     li {
-      background-color: white;
-      padding: 10px;
+      background: white;
       margin-top: 10px;
-      border-radius: 5px;
+      padding: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-radius: 5px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    li.completed span {
-      text-decoration: line-through;
-      color: gray;
-    }
-    .delete-btn {
-      background-color: #e74c3c;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 3px;
+    .delete {
+      color: red;
+      font-weight: bold;
       cursor: pointer;
-    }
-    .delete-btn:hover {
-      background-color: #c0392b;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
   <h1>TidyTasks</h1>
   <div class="input-group">
-    <input type="text" id="tareaInput" placeholder="Escribe tu tarea aquí...">
+    <input type="text" id="tareaInput" placeholder="Escribe tu tarea..." />
+    <input type="date" id="fechaInput" />
     <button onclick="agregarTarea()">Agregar</button>
   </div>
+
   <ul id="listaTareas"></ul>
 
   <script>
@@ -85,32 +74,25 @@
       lista.innerHTML = "";
       tareas.forEach((tarea, index) => {
         const li = document.createElement("li");
-        li.className = tarea.completada ? "completed" : "";
         li.innerHTML = \`
-          <span onclick="marcarCompleta(\${index})">\${tarea.texto}</span>
-          <button class="delete-btn" onclick="eliminarTarea(\${index})">Eliminar</button>
+          <span>\${tarea.texto} (Entrega: \${tarea.fecha})</span>
+          <span class="delete" onclick="eliminarTarea(\${index})">X</span>
         \`;
         lista.appendChild(li);
       });
     }
 
     function agregarTarea() {
-      const input = document.getElementById("tareaInput");
-      const texto = input.value.trim();
-      if (texto !== "") {
+      const texto = document.getElementById("tareaInput").value.trim();
+      const fecha = document.getElementById("fechaInput").value;
+      if (texto && fecha) {
         const tareas = JSON.parse(localStorage.getItem("tidytasks")) || [];
-        tareas.push({ texto, completada: false });
+        tareas.push({ texto, fecha });
         localStorage.setItem("tidytasks", JSON.stringify(tareas));
-        input.value = "";
+        document.getElementById("tareaInput").value = "";
+        document.getElementById("fechaInput").value = "";
         cargarTareas();
       }
-    }
-
-    function marcarCompleta(index) {
-      const tareas = JSON.parse(localStorage.getItem("tidytasks"));
-      tareas[index].completada = !tareas[index].completada;
-      localStorage.setItem("tidytasks", JSON.stringify(tareas));
-      cargarTareas();
     }
 
     function eliminarTarea(index) {
